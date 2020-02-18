@@ -127,3 +127,6 @@ ggplot(sanchez)+ geom_histogram(aes(beetle96, binwidth = .5))
 #To do this, execute the following function
 ggplot(sanchez)+
   geom_boxplot(aes(x = Colony, y = beetle96), varwidth = TRUE)
+
+### Great job annotating your code! 
+### GRADE: 10/10 code runs without breaking ####
