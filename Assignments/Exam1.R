@@ -36,7 +36,7 @@ view(chap13e5SagebrushCrickets_summary01)
 # who were fed and starved.
 
 #To do this, excecute the following code
-ggplot(chap13e5SagebrushCrickets)+ geom_histogram(aes(timeToMating, binwidth = 1))+
+ggplot(chap13e5SagebrushCrickets)+ geom_histogram(aes(timeToMating), binwidth = 10)+
   facet_wrap(~feedingStatus)
 
 ### Modifying the data ####
@@ -51,5 +51,5 @@ chap13e5SagebrushCrickets <- chap13e5SagebrushCrickets %>%
 # Now you will need to create the new histograms
 
 #To do this, excecute the following code
-ggplot(chap13e5SagebrushCrickets)+ geom_histogram(aes(log1timeToMating, binwidth = 1))+
+ggplot(chap13e5SagebrushCrickets)+ geom_histogram(aes(log1timeToMating), binwidth = .25)+
   facet_wrap(~feedingStatus)
