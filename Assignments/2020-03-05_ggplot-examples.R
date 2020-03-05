@@ -12,8 +12,8 @@ if(!require(gapminder)){install.packages("gapminder")}
 if(!require(Lahman)){install.packages("Lahman")}
 tidyverse_update()
 
-mpg
-summary(mpg) 
+mpg %>%
+summary(mpg)%>%
 view(mpg)
 
 #### Different Kinds of Plots ####
@@ -66,14 +66,26 @@ demo <- tribble(
   "Good",       4906,
   "Very Good",  12082,
   "Premium",    13791,
-  "Ideal",      21551
-)
+  "Ideal",      21551)
+
 ggplot(data = diamonds) + 
   geom_bar(mapping = aes(x = cut, fill = clarity), position = "dodge2")
 
 # Bar graph with stacking
 ggplot(data = diamonds) + 
   stat_count(mapping = aes(x = cut, fill = color))
+
+# coord_polar is for pie charts aka stacked bar charts in polar coordinates
+ggplot(data = diamonds)+
+  geom_bar(mapping = aes(x=cut, fill = cut))+
+  coord_polar()
+
+# For a line graph without the added shading from smooth, you have to calculate 
+# slope and intercept
+p <- ggplot(mtcars, aes(wt, mpg)) + geom_point(mapping = aes(x = wt, y = mpg), color = "PURPLE")
+# Calculate slope and intercept of line of best fit
+coef(lm(mpg ~ wt, data = mtcars))
+p + geom_abline(mapping = aes(intercept = 37, slope = -5), color = "TURQUOISE")
 
 #Overlayed with shape and color mapped to make a super confusing graph
 ggplot(data = mpg, mapping = aes(x = displ, y = hwy)) +
@@ -93,10 +105,6 @@ ggplot(data = mpg, mapping = aes(x = drv, y = hwy)) +
 # This last one has WAY too many groups
 
 # Maps
-install.packages("maps")
-library("maps")
-nz <- map_data("nz")
-
 ggplot(nz, aes(long, lat, group = group)) +
-  geom_polygon(fill = "WHITE", colour = "BLUE") +
+  geom_polygon(fill = "BLACK", colour = "PURPLE") +
   coord_quickmap()
