@@ -421,3 +421,4 @@ ggplot(data = mpg, mapping = aes(x = cty, y = hwy)) +
 # geom_jitter() is more about visualizing difference in the data
 # geom_count() gives you information about what overplotting covers up
 ?geom_count()
+
