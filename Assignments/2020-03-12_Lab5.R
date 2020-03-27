@@ -70,6 +70,7 @@ heart <- read_csv("datasets/demos/HeartAttack_short.csv", col_types = cols(group
 view(heart)
 
 summ_heart <- heart %>%
+  group_by(group) %>%
   summarise(mean_cholest = mean(cholest),
             median_cholest = median(cholest),
             IQR_cholest = IQR(cholest),
@@ -89,7 +90,6 @@ view(ratio)
 
 ggplot(heart) +
   geom_histogram(aes(cholest), binwidth = 10)
-  facet_wrap(group)
 
 ggplot(heart) +
   geom_boxplot(aes(cholest))
