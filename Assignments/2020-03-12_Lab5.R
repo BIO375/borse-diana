@@ -46,7 +46,7 @@ summary_Obliquity <- Obliquity %>%
           IQR_Obliquity = IQR(Obliquity),
           sd_Obliquity = sd(Obliquity),
           var_Obliquity = var(Obliquity),
-          se_obliquity = sd(Obliquity)/sqrt(n()),
+          se_Obliquity = sd(Obliquity)/sqrt(n()),
           n_Obliquity = n())
 
 view(summary_Obliquity)
@@ -98,4 +98,25 @@ ggplot(heart) +
 t.test(cholest ~ group, data = heart, var.equal = TRUE, alternative = "two.sided", mu = 0, conf.level = 0.95)
 
 #### Question 3 ####
+
+library(readr)
+furness <- read_csv("datasets/quinn/chpt3/furness.csv")
+View(furness)
+
+summary_furness <- furness %>%
+  group_by(SEX) %>%
+  summarise(mean_METRATE = mean(METRATE),
+            median_METRATE = median(METRATE),
+            IQR_METRATE = IQR(METRATE),
+            sd_METRATE = sd(METRATE),
+            var_METRATE = var(METRATE),
+            se_METRATE = sd(METRATE)/sqrt(n()),
+            n_METRATE = n())
+
+view(summary_furness)
+
+ggplot(furness) +
+  geom_boxplot(aes(x = SEX, y = METRATE), varwidth = TRUE)
+
+wilcox.test(METRATE ~ SEX, data = furness, var.equal = TRUE, alternative = "two.sided", mu = 0, conf.level = 0.95)
 
