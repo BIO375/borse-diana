@@ -53,8 +53,43 @@ view(summary_Obliquity)
 
 alpha <- 0.05
 mean <- 23.49878
-se <- 0.008771201
+se <- 	0.008771201
 df <- 4
+null_mean <- 0
 
-t <- 
-t.test(Date, alternative = "two.sided", mu = 0, conf.level = 0.95)
+t_sample <- (mean - null_mean)/(se)
+
+view(t_sample)
+
+t.test(Obliquity$Obliquity, alternative = "two.sided", mu = 0, conf.level = 0.95)
+
+#### Question 2 ####
+
+heart <- read_csv("datasets/demos/HeartAttack_short.csv", col_types = cols(group = col_character()))
+
+view(heart)
+
+summ_heart <- heart %>%
+  summarise(mean_cholest = mean(cholest),
+            median_cholest = median(cholest),
+            IQR_cholest = IQR(cholest),
+            sd_cholest = sd(cholest),
+            var_cholest = var(cholest),
+            se_cholest = sd(cholest)/sqrt(n()),
+            n_cholest = n()) 
+
+view(summ_heart)
+
+ratio <- (max(summ_heart$sd_cholest))/(min(summ_heart$sd_cholest))
+
+view(ratio)
+
+#Test whether assumptions are violated
+#Boxplot
+
+ggplot(heart) +
+  geom_histogram(aes(cholest), binwidth = 10)
+  facet_wrap(group)
+
+ggplot(heart) +
+  geom_boxplot(aes(cholest))
