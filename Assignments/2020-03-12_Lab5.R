@@ -46,9 +46,15 @@ summary_Obliquity <- Obliquity %>%
           IQR_Obliquity = IQR(Obliquity),
           sd_Obliquity = sd(Obliquity),
           var_Obliquity = var(Obliquity),
+          se_obliquity = sd(Obliquity)/sqrt(n()),
           n_Obliquity = n())
 
+view(summary_Obliquity)
+
 alpha <- 0.05
-mean <- summary$mean
-se <- summary$se
-df <- summary$n -1
+mean <- 23.49878
+se <- 0.008771201
+df <- 4
+
+t <- 
+t.test(Date, alternative = "two.sided", mu = 0, conf.level = 0.95)
