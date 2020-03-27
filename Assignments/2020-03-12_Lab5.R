@@ -93,3 +93,9 @@ ggplot(heart) +
 
 ggplot(heart) +
   geom_boxplot(aes(cholest))
+
+# T-test
+t.test(cholest ~ group, data = heart, var.equal = TRUE, alternative = "two.sided", mu = 0, conf.level = 0.95)
+
+#### Question 3 ####
+
