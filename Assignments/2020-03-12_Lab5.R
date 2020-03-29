@@ -118,5 +118,76 @@ view(summary_furness)
 ggplot(furness) +
   geom_boxplot(aes(x = SEX, y = METRATE), varwidth = TRUE)
 
-wilcox.test(METRATE ~ SEX, data = furness, var.equal = TRUE, alternative = "two.sided", mu = 0, conf.level = 0.95)
+wilcox.test(diffH ~ SEX, data = furness, var.equal = TRUE, alternative = "two.sided", mu = 0, conf.level = 0.95)
 
+#### Question 4 ####
+
+library(readr)
+elgar <- read_csv("datasets/quinn/chpt3/elgar.csv")
+View(elgar)
+
+#Mutate so you have two columns for differences
+
+elgar <- elgar %>%
+  mutate(diffH = HORIZDIM - HORIZLIG)
+
+elgar <-  elgar %>%
+  mutate(diffV = VERTDIM - VERTLIGH)
+
+# Calculate summary statistics for vertical (this shows that the distribution of
+# differences for this dataset is non-normal, but only for vertical data)
+
+summary2_elgar <- elgar %>%
+  summarise(mean_diffV = mean(diffV),
+            median_diffV = median(diffV),
+            IQR_diffV = IQR(diffV),
+            sd_diffV = sd(diffV),
+            var_diffV = var(diffV),
+            se_diffV = sd(diffV)/sqrt(n()),
+            n_diffV = n())
+
+view(summary2_elgar)
+
+# Show non-normality with graphs
+
+ggplot(elgar) +
+  geom_boxplot(aes(diffV), varwidth = TRUE)
+
+ggplot(elgar) +
+  geom_histogram(aes(diffV), binwidth = 15)
+
+ggplot(elgar)+
+  geom_qq(aes(sample = diffV))
+
+# Calculate summary statistics for horizontal differences and show that the 
+# distribution of differences is approximately normal
+
+summary_elgar <- elgar %>%
+  summarise(mean_diffH = mean(diffH),
+            median_diffH = median(diffH),
+            IQR_diffH = IQR(diffH),
+            sd_diffH = sd(diffH),
+            var_diffH = var(diffH),
+            se_diffH = sd(diffH)/sqrt(n()),
+            n_diffH = n())
+
+view(summary_elgar)
+
+# visualize the normal distribution with graphs
+
+ggplot(elgar) +
+  geom_boxplot(aes(diffH), varwidth = TRUE)
+
+ggplot(elgar) +
+  geom_histogram(aes(diffH), binwidth = 15)
+
+ggplot(elgar)+
+  geom_qq(aes(sample = diffH))
+
+# Perform paired t-test
+
+t.test(elgar$HORIZDIM, elgar$HORIZLIG, 
+       alternative = "two.sided", paired = TRUE, conf.level = 0.95)
+
+t.test(elgar$HORIZLIG, elgar$HORIZDIM,
+        alternative = "two.sided", paired = TRUE, conf.level = 0.95)
