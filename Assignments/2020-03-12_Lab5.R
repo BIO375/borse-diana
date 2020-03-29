@@ -19,6 +19,8 @@ tidyverse_update()
 
 #### Confidence Intervals ####
 
+# This is just a general outline for copy-pasting as needed.
+
 # Data needed:
 summarise(mean_variable = mean(variable),
           median_variable = median(variable),
@@ -40,6 +42,8 @@ library(readr)
 Obliquity <- read_csv("datasets/demos/Obliquity.csv")
 View(Obliquity)
 
+# Calculate summary statistics
+
 summary_Obliquity <- Obliquity %>%
   summarise(mean_Obliquity = mean(Obliquity),
           median_Obliquity = median(Obliquity),
@@ -57,9 +61,13 @@ se <- 	0.008771201
 df <- 4
 null_mean <- 0
 
+# Checking t-sample
+
 t_sample <- (mean - null_mean)/(se)
 
 view(t_sample)
+
+#Performing the t-test
 
 t.test(Obliquity$Obliquity, alternative = "two.sided", mu = 0, conf.level = 0.95)
 
@@ -68,6 +76,8 @@ t.test(Obliquity$Obliquity, alternative = "two.sided", mu = 0, conf.level = 0.95
 heart <- read_csv("datasets/demos/HeartAttack_short.csv", col_types = cols(group = col_character()))
 
 view(heart)
+
+# Calculate summary statistics
 
 summ_heart <- heart %>%
   group_by(group) %>%
@@ -81,12 +91,14 @@ summ_heart <- heart %>%
 
 view(summ_heart)
 
+# Check the ratio for assumptions
+
 ratio <- (max(summ_heart$sd_cholest))/(min(summ_heart$sd_cholest))
 
 view(ratio)
 
 #Test whether assumptions are violated
-#Boxplot
+#Histogram and boxplot
 
 ggplot(heart) +
   geom_histogram(aes(cholest), binwidth = 10)
@@ -94,14 +106,32 @@ ggplot(heart) +
 ggplot(heart) +
   geom_boxplot(aes(cholest))
 
+# Ignore the violated assumptions and perform a t-test anyway
 # T-test
+
 t.test(cholest ~ group, data = heart, var.equal = TRUE, alternative = "two.sided", mu = 0, conf.level = 0.95)
+
+# Try some transformations?
+
+heart <- heart %>%
+  mutate(logCHOLEST = log(cholest))
+
+ggplot(heart) +
+  geom_boxplot(aes(logCHOLEST))
+
+# Transformation made it a bit more normal...
+
+t.test(logCHOLEST ~ group, data = heart, var.equal = TRUE, alternative = "two.sided", mu = 0, conf.level = 0.95)
+  
+# Results of t-test are similar
 
 #### Question 3 ####
 
 library(readr)
 furness <- read_csv("datasets/quinn/chpt3/furness.csv")
 View(furness)
+
+# Calculate summary statistics
 
 summary_furness <- furness %>%
   group_by(SEX) %>%
@@ -115,10 +145,14 @@ summary_furness <- furness %>%
 
 view(summary_furness)
 
+#Check if it violates assumptions
+
 ggplot(furness) +
   geom_boxplot(aes(x = SEX, y = METRATE), varwidth = TRUE)
 
-wilcox.test(diffH ~ SEX, data = furness, var.equal = TRUE, alternative = "two.sided", mu = 0, conf.level = 0.95)
+# perform wilcox test anyway
+
+wilcox.test(METRATE ~ SEX, data = furness, var.equal = TRUE, alternative = "two.sided", mu = 0, conf.level = 0.95)
 
 #### Question 4 ####
 
@@ -188,6 +222,8 @@ ggplot(elgar)+
 
 t.test(elgar$HORIZDIM, elgar$HORIZLIG, 
        alternative = "two.sided", paired = TRUE, conf.level = 0.95)
+
+#Show how it is the same when you switch the order.
 
 t.test(elgar$HORIZLIG, elgar$HORIZDIM,
         alternative = "two.sided", paired = TRUE, conf.level = 0.95)
