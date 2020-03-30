@@ -59,7 +59,7 @@ alpha <- 0.05
 mean <- 23.49878
 se <- 	0.008771201
 df <- 4
-null_mean <- 0
+null_mean <- 23.4722
 
 # Checking t-sample
 
