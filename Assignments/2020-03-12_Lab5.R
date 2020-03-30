@@ -104,7 +104,7 @@ ggplot(heart) +
   geom_histogram(aes(cholest), binwidth = 10)
 
 ggplot(heart) +
-  geom_boxplot(aes(cholest))
+  geom_boxplot(aes(x = group, y = cholest))
 
 # Ignore the violated assumptions and perform a t-test anyway
 # T-test
@@ -122,7 +122,7 @@ ggplot(heart) +
 # Transformation made it a bit more normal...
 
 t.test(logCHOLEST ~ group, data = heart, var.equal = TRUE, alternative = "two.sided", mu = 0, conf.level = 0.95)
-  
+
 # Results of t-test are similar
 
 #### Question 3 ####
