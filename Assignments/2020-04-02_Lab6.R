@@ -20,26 +20,23 @@ tidyverse_update()
 #### Problem 13-20 ####
 
 library(readr)
-#Craig_Foote <- read_csv("datasets/demos/Craig_Foote.csv")
-### DIANA: I can't find the data file from above, so I read in the one from the abd folder
-# and then renamed the variables with your names 
+Craig_Foote <- read_csv("~/Bio 375/Analyses/borse-diana/datasets/demos/Craig_Foote.csv")
 
-Craig_Foote <- read_csv("datasets/abd/chapter13/chap13q20SalmonColor.csv")
-
-Craig_Foote <- rename(Craig_Foote, Type = species, Color = skinColor)
+# This problem has two independent samples, so I will start by analyzing assumptions
+# of a two-sample t-test.
 
 # Calculate summary statistics
 summ_Craig_Foote <- Craig_Foote %>%
   group_by(Type) %>%
-  summarise(mean_Color = mean(Color),
-            median_Color = median(Color),
-            IQR_Color = IQR(Color),
-            sd_Color = sd(Color),
-            var_Color = var(Color),
-            se_Color = sd(Color)/sqrt(n()),
-            n_Color = n()) 
+summarise(mean_Color = mean(Color),
+          median_Color = median(Color),
+          IQR_Color = IQR(Color),
+          sd_Color = sd(Color),
+          var_Color = var(Color),
+          se_Color = sd(Color)/sqrt(n()),
+          n_Color = n()) 
 
-view(summ_Craig_Foote)
+view(summ_C)
 
 # Checking Normality of distributions
 
@@ -84,11 +81,78 @@ ratio <- (max(summ_Craig_Foote$sd_logColor))/(min(summ_Craig_Foote$sd_logColor))
 view(ratio)
 
 # Perform t-test (Mann Whitney U / Wilcox)
-### Diana, you are going to scream but it was literally just that you had the W in wilcox.test capitalized.  
-# Because there are repeats, you also have to throw the argument exact = FALSE in there.
 
-# wilcox.test(Color ~ Type, data = Craig_Foote, var.equal = TRUE, alternative = "less", mu = 0, conf.level = 0.95)
-wilcox.test(Color ~ Type, data = Craig_Foote, var.equal = TRUE, alternative = "less", mu = 0, exact = FALSE, conf.level = 0.95)
+wilcox.test(Color ~ Type, data = Craig_Foote, var.equal = TRUE, alternative = "less", mu = 0, conf.level = 0.95)
+
 t.test(Color ~ Type, data = Craig_Foote, var.equal = TRUE, alternative = "less", mu = 0, conf.level = 0.95)
 
+#### Problem 13-25 ####
 
+library(readr)
+chap13q25Clearcuts <- read_csv("datasets/abd/chapter13/chap13q25Clearcuts.csv")
+
+# This data has one sample, but the data is in terms of difference. Therefore, I 
+# will be examining assumptions of a paired t-test.
+
+# Calculate summary statistics
+summ_chap13q25Clearcuts <- chap13q25Clearcuts %>%
+  summarise(mean_biomassChange = mean(biomassChange),
+            median_biomassChange = median(biomassChange),
+            IQR_biomassChange = IQR(biomassChange),
+            sd_biomassChange = sd(biomassChange),
+            var_biomassChange = var(biomassChange),
+            se_biomassChange = sd(biomassChange)/sqrt(n()),
+            n_biomassChange = n()) 
+
+view(summ_chap13q25Clearcuts)
+
+# Test assumption of normality
+
+ggplot(chap13q25Clearcuts) +
+  geom_histogram(aes(biomassChange), binwidth = .65)
+
+ggplot(chap13q25Clearcuts) +
+  geom_boxplot(aes(x = "", y = biomassChange))
+
+# Both of these show that the differences are not normally distributed
+
+# Try a transformation
+
+chap13q25Clearcuts <- chap13q25Clearcuts %>%
+  mutate(logbiomassChange = log(biomassChange))
+
+# Cannot take log of a negative number... oopse
+# squared differences and then took the log of the squared differences
+
+chap13q25Clearcuts <- chap13q25Clearcuts %>%
+  mutate(squaredbiomassChange = (biomassChange^2))
+
+chap13q25Clearcuts <- chap13q25Clearcuts %>%
+  mutate(logsquaredbiomassChange = log(squaredbiomassChange))
+
+# Test for normality
+
+summ_chap13q25Clearcuts <- chap13q25Clearcuts %>%
+  summarise(mean_logsquaredbiomassChange = mean(logsquaredbiomassChange),
+            median_logsquaredbiomassChange = median(logsquaredbiomassChange),
+            IQR_logsquaredbiomassChange = IQR(logsquaredbiomassChange),
+            sd_logsquaredbiomassChange = sd(logsquaredbiomassChange),
+            var_logsquaredbiomassChange = var(logsquaredbiomassChange),
+            se_logsquaredbiomassChange = sd(logsquaredbiomassChange)/sqrt(n()),
+            n_logsquaredbiomassChange = n()) 
+
+ggplot(chap13q25Clearcuts) +
+  geom_histogram(aes(logsquaredbiomassChange), binwidth = .5)
+
+ggplot(chap13q25Clearcuts) +
+  geom_boxplot(aes(x = "", y = logsquaredbiomassChange))
+
+# This is more normal, but still not entirely normal.
+
+# Sign test.
+
+SignTest(chap13q25Clearcuts$logsquaredbiomassChange, alternative = "two.sided", mu = 0, conf.level = 0.95)
+
+# We found that change in biomass between rainforests before and after next to 
+# clearcuts next to them was significantly different
+# (one sample sign test: s = 25, df = 34, p < .01)
