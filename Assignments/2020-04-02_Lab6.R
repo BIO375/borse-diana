@@ -233,5 +233,67 @@ t.test(chap13q26ZebraFinchBeaks$logpreference, alternative = "greater", mu = 0, 
 
 #### Problem 13-2-16 ####
 
+# This is a two sample, two-sided question
 
+Norton <- read_csv("datasets/demos/Norton.csv")
 
+# Calculate summary statistics
+
+summ_Norton <- Norton %>%
+  group_by(Type) %>%
+  summarise(mean_Time = mean(Time),
+            median_Time = median(Time),
+            IQR_Time = IQR(Time),
+            sd_Time = sd(Time),
+            var_Time = var(Time),
+            se_Time = sd(Time)/sqrt(n()),
+            n_Time = n())
+
+# Test assumptions of a two sample t-test (normality and homogeneous variance)
+
+# Normality
+
+ggplot(Norton) +
+  geom_histogram(aes(Time), binwidth = 20) + 
+  facet_wrap(~Type)
+
+ggplot(Norton) +
+  geom_boxplot(aes(x = Type, y = Time))
+
+ggplot(Norton) +
+  geom_qq(aes(sample = Time))
+
+# Homogeneous variance
+
+ratio <- (max(summ_Norton$sd_Time))/(min(summ_Norton$sd_Time))
+
+view(ratio)
+
+# variance is acceptable (1.39 < 3.0)
+
+# Not normally distributed, try transformation
+
+Norton <-  Norton %>%
+  mutate(logTime = log(Time))
+
+# normal?
+
+ggplot(Norton) +
+  geom_histogram(aes(logTime), binwidth = .5) + 
+  facet_wrap(~Type)
+
+ggplot(Norton) +
+  geom_boxplot(aes(x = Type, y = logTime))
+
+ggplot(Norton) +
+  geom_qq(aes(sample = logTime))
+
+# Transformation made it worse.
+
+# So it is not normal, proceed to wilcox test
+
+wilcox.test(Time ~ Type, data = Norton, var.equal = TRUE,exact = FALSE, alternative = "two.sided", mu = 0, conf.level = 0.95)
+
+# We found that there was a significant difference between spd mutants and Wild 
+# type zebra fish in the amount of time spent in aggressive activity with their 
+# reflection (two sided wilcox test: w = 90, df = 20, p = .01512).
