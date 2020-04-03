@@ -20,7 +20,13 @@ tidyverse_update()
 #### Problem 13-20 ####
 
 library(readr)
-Craig_Foote <- read_csv("~/Bio 375/Analyses/borse-diana/datasets/demos/Craig_Foote.csv")
+#Craig_Foote <- read_csv("datasets/demos/Craig_Foote.csv")
+### DIANA: I can't find the data file from above, so I read in the one from the abd folder
+# and then renamed the variables with your names 
+
+Craig_Foote <- read_csv("datasets/abd/chapter13/chap13q20SalmonColor.csv")
+
+Craig_Foote <- rename(Craig_Foote, Type = species, Color = skinColor)
 
 # Calculate summary statistics
 summ_Craig_Foote <- Craig_Foote %>%
@@ -78,9 +84,11 @@ ratio <- (max(summ_Craig_Foote$sd_logColor))/(min(summ_Craig_Foote$sd_logColor))
 view(ratio)
 
 # Perform t-test (Mann Whitney U / Wilcox)
+### Diana, you are going to scream but it was literally just that you had the W in wilcox.test capitalized.  
+# Because there are repeats, you also have to throw the argument exact = FALSE in there.
 
-Wilcox.test(Color ~ Type, data = Craig_Foote, var.equal = TRUE, alternative = "less", mu = 0, conf.level = 0.95)
-
+# wilcox.test(Color ~ Type, data = Craig_Foote, var.equal = TRUE, alternative = "less", mu = 0, conf.level = 0.95)
+wilcox.test(Color ~ Type, data = Craig_Foote, var.equal = TRUE, alternative = "less", mu = 0, exact = FALSE, conf.level = 0.95)
 t.test(Color ~ Type, data = Craig_Foote, var.equal = TRUE, alternative = "less", mu = 0, conf.level = 0.95)
 
 
