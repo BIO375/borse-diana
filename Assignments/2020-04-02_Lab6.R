@@ -37,7 +37,7 @@ summarise(mean_Color = mean(Color),
           se_Color = sd(Color)/sqrt(n()),
           n_Color = n()) 
 
-view(summ_C)
+view(summ_Craig_Foote)
 
 # Checking Normality of distributions
 
@@ -246,8 +246,9 @@ summ_Norton <- Norton %>%
             IQR_Time = IQR(Time),
             sd_Time = sd(Time),
             var_Time = var(Time),
-            se_Time = sd(Time)/sqrt(n()),
-            n_Time = n())
+            se_Time = sd)
+
+# difference between the means
 
 # Test assumptions of a two sample t-test (normality and homogeneous variance)
 
