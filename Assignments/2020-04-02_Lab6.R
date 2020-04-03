@@ -82,9 +82,9 @@ view(ratio)
 
 # Perform t-test (Mann Whitney U / Wilcox)
 
-wilcox.test(Color ~ Type, data = Craig_Foote, var.equal = TRUE, alternative = "less", mu = 0, conf.level = 0.95)
+wilcox.test(Color ~ Type, data = Craig_Foote, var.equal = TRUE,exact = FALSE, alternative = "less", mu = 0, conf.level = 0.95)
 
-t.test(Color ~ Type, data = Craig_Foote, var.equal = TRUE, alternative = "less", mu = 0, conf.level = 0.95)
+# We found that there was not a significant difference between 
 
 #### Problem 13-25 ####
 
@@ -156,3 +156,4 @@ SignTest(chap13q25Clearcuts$logsquaredbiomassChange, alternative = "two.sided", 
 # We found that change in biomass between rainforests before and after next to 
 # clearcuts next to them was significantly different
 # (one sample sign test: s = 25, df = 34, p < .01)
+
