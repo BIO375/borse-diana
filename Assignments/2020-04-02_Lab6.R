@@ -75,6 +75,20 @@ ggplot(Craig_Foote) +
 ggplot(Craig_Foote) +
   geom_boxplot(aes(x = Type, y = logColor))
 
+
+## Better plot?
+ggplot(Craig_Foote) +
+  geom_boxplot(aes(x = Type, y = logColor))+
+  stat_summary(aes(x = Type, y = logColor), 
+               fun.y=mean, 
+               colour="blue", 
+               fill = "blue",
+               geom="point", 
+               shape=21, 
+               size=3)
+
+## Yes, better plot.
+
 # Check if the ratio of sdmax to sdmin is acceptable
 
 ratio <- (max(summ_Craig_Foote$sd_logColor))/(min(summ_Craig_Foote$sd_logColor))
