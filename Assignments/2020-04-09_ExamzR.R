@@ -72,12 +72,15 @@ baker <- baker %>%
 baker <- baker %>%
   mutate(log_diffsqrd = log(diffsqrd))
 
-# Check for normality 
+# Check for normality after transformation:
 summary <- baker %>%
   summarise(mean = mean(log_diffsqrd),
+            median = median(log_diffsqrd),
             sd = sd(log_diffsqrd),
             n = n(),
             se = sd(log_diffsqrd)/sqrt(n()))
+
+# close enough to a normal curve
 
 # Histogram
 ggplot(baker) +
@@ -94,10 +97,68 @@ ggplot(baker) +
                shape=21, 
                size=3)
 
+# Mean and median are close enough together (had to look at the data itself),
+# Whisker lengths are acceptably similar, no outliers, median is almost exactly 
+# in the middle of the IQR box.
+
 # Q-Q plot
 ggplot(baker)+
   geom_qq(aes(sample = log_diffsqrd))
 
+# Near enough approximation of a line.
+
 # That made it acceptably normal, so I can perform a paired t-test.
 t.test(baker$After, baker$Before, 
        alternative = "greater", paired =  TRUE, conf.level = 0.95)
+
+#### Question 18 ####
+
+# load data
+install.packages("abd", repos="http://R-Forge.R-project.org")
+
+library("abd")
+
+algae <- AlgaeCO2
+
+# Calculate summary statistics
+summary <- algae %>%
+  group_by(treatment) %>%
+  summarise(mean = mean(growthrate),
+            median = median(growthrate),
+            sd = sd(growthrate),
+            n = n(),
+            se = sd(growthrate)/sqrt(n()))
+
+# Test assumptions of a two-sample t-test
+# Normality and homogeneous difference
+
+# Normality
+# Histogram
+ggplot(algae) +
+  geom_histogram(aes(growthrate), binwidth = .25)+
+  facet_wrap(~treatment)
+
+# Boxplot
+ggplot(algae) +
+  geom_boxplot(aes(x = treatment, y = growthrate))+
+  stat_summary(aes(x = treatment, y = growthrate), 
+               fun=mean, 
+               colour="blue", 
+               fill = "blue",
+               geom="point", 
+               shape=21, 
+               size=3)
+
+# Q-Q plot
+ggplot(algae)+
+  geom_qq(aes(sample = growthrate))+
+  facet_wrap(~treatment)
+
+# Assumption of normality is met.
+
+# Homogeneous variance
+ratio <- (max(summary$sd))/(min(summary$sd))
+# Ratio is 1.1265 which is less than three and is therefore acceptable
+
+# Therefore, we can perform a two-sample two-sided t-test
+t.test(growthrate ~ treatment, data = algae, var.equal = TRUE, alternative = "two.sided", conf.level = 0.95)
