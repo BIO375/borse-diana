@@ -29,6 +29,7 @@ baker <- baker %>%
 # Calculate summary statistics
 summary <- baker %>%
   summarise(mean = mean(diff),
+            median = median(diff),
             sd = sd(diff),
             n = n(),
             se = sd(diff)/sqrt(n()))
