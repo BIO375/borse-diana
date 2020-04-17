@@ -272,3 +272,110 @@ model03 <- lm(nFlowers~Treatment, data = competition)
 autoplot(model03)
 
 anova(model03)
+
+#### Plant Height ####
+
+summary5 <- competition %>%
+  group_by(Treatment) %>%
+  summarise(mean_plantHeight_cm = mean(plantHeight_cm),
+            median_plantHeight_cm = median(plantHeight_cm),
+            IQR_plantHeight_cm = IQR(plantHeight_cm),
+            sd_plantHeight_cm = sd(plantHeight_cm),
+            var_plantHeight_cm = var(plantHeight_cm),
+            se_plantHeight_cm = sd(plantHeight_cm)/sqrt(n()),
+            n_plantHeight_cm = n())
+
+# Testing for normality
+ggplot(competition) +
+  geom_boxplot(aes(group = Treatment, x = Treatment, y = plantHeight_cm))+
+  stat_summary(aes(group = Treatment, x = Treatment, y = plantHeight_cm), 
+               fun.y=mean, 
+               colour="blue", 
+               fill = "blue",
+               geom="point", 
+               shape=21, 
+               size=3)
+ggplot(competition) +
+  geom_histogram(aes(plantHeight_cm), binwidth = 2.5)+
+  facet_wrap(~Treatment)
+ggplot(competition)+
+  geom_qq(aes(sample = plantHeight_cm)) +
+  facet_wrap(~Treatment)
+
+# Check for homogeneous variance
+
+summ_plantHeight_cm <- competition %>%
+  group_by(Treatment) %>% 
+  summarise(mean_plantHeight_cm = mean(plantHeight_cm),
+            sd_plantHeight_cm = sd(plantHeight_cm),
+            n_plantHeight_cm = n())
+
+ratio <-(max(summ_plantHeight_cm$sd_plantHeight_cm))/(min(summ_plantHeight_cm$sd_plantHeight_cm))
+
+# Variance is not acceptable, try a transformation
+
+competition <- competition %>%
+  mutate(ln_plantHeight_cm = log(plantHeight_cm))
+
+# Check again
+
+summ_ln_plantHeight_cm <- competition %>%
+  group_by(Treatment) %>% 
+  summarise(mean_ln_plantHeight_cm = mean(ln_plantHeight_cm),
+            sd_ln_plantHeight_cm = sd(ln_plantHeight_cm),
+            n_ln_plantHeight_cm = n())
+
+ratio <-(max(summ_ln_plantHeight_cm$sd_ln_plantHeight_cm))/(min(summ_ln_plantHeight_cm$sd_ln_plantHeight_cm))
+
+# That made it worse
+
+# Perform welch's test
+oneway.test(plantHeight_cm ~ Treatment, data = competition)
+
+# Try a tukey test
+model04 <- lm(plantHeight_cm~Treatment, data = competition)
+
+tukey <- glht(model04, linfct = mcp(Treatment = "Tukey"))
+summary(tukey)
+
+#### Branches ####
+
+
+summary6 <- competition %>%
+  group_by(Treatment) %>%
+  summarise(mean_nBranches = mean(nBranches),
+            median_nBranches = median(nBranches),
+            IQR_nBranches = IQR(nBranches),
+            sd_nBranches = sd(nBranches),
+            var_nBranches = var(nBranches),
+            se_nBranches = sd(nBranches)/sqrt(n()),
+            n_nBranches = n())
+
+# Testing for normality
+ggplot(competition) +
+  geom_boxplot(aes(group = Treatment, x = Treatment, y = nBranches))+
+  stat_summary(aes(group = Treatment, x = Treatment, y = nBranches), 
+               fun.y=mean, 
+               colour="blue", 
+               fill = "blue",
+               geom="point", 
+               shape=21, 
+               size=3)
+ggplot(competition) +
+  geom_histogram(aes(nBranches), binwidth = .5)+
+  facet_wrap(~Treatment)
+ggplot(competition)+
+  geom_qq(aes(sample = nBranches)) +
+  facet_wrap(~Treatment)
+
+# Check for homogeneous variance
+
+summ_nBranches <- competition %>%
+  group_by(Treatment) %>% 
+  summarise(mean_nBranches = mean(nBranches),
+            sd_nBranches = sd(nBranches),
+            n_nBranches = n())
+
+ratio <-(max(summ_nBranches$sd_nBranches))/(min(summ_nBranches$sd_nBranches))
+
+# Not normal and not homogeneous variance
