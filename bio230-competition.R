@@ -379,3 +379,52 @@ summ_nBranches <- competition %>%
 ratio <-(max(summ_nBranches$sd_nBranches))/(min(summ_nBranches$sd_nBranches))
 
 # Not normal and not homogeneous variance
+
+#### Chlorophyll Concentration ####
+
+summary7 <- competition %>%
+  group_by(Treatment) %>%
+  summarise(mean_ChlorophyllConc = mean(ChlorophyllConc),
+            median_ChlorophyllConc = median(ChlorophyllConc),
+            IQR_ChlorophyllConc = IQR(ChlorophyllConc),
+            sd_ChlorophyllConc = sd(ChlorophyllConc),
+            var_ChlorophyllConc = var(ChlorophyllConc),
+            se_ChlorophyllConc = sd(ChlorophyllConc)/sqrt(n()),
+            n_ChlorophyllConc = n())
+
+# Testing for normality
+ggplot(competition) +
+  geom_boxplot(aes(group = Treatment, x = Treatment, y = ChlorophyllConc))+
+  stat_summary(aes(group = Treatment, x = Treatment, y = ChlorophyllConc), 
+               fun.y=mean, 
+               colour="blue", 
+               fill = "blue",
+               geom="point", 
+               shape=21, 
+               size=3)
+ggplot(competition) +
+  geom_histogram(aes(ChlorophyllConc), binwidth = 50)+
+  facet_wrap(~Treatment)
+ggplot(competition)+
+  geom_qq(aes(sample = ChlorophyllConc)) +
+  facet_wrap(~Treatment)
+
+# Check for homogeneous variance
+
+summ_ChlorophyllConc <- competition %>%
+  group_by(Treatment) %>% 
+  summarise(mean_ChlorophyllConc = mean(ChlorophyllConc),
+            sd_ChlorophyllConc = sd(ChlorophyllConc),
+            n_ChlorophyllConc = n())
+
+ratio <-(max(summ_ChlorophyllConc$sd_ChlorophyllConc))/(min(summ_ChlorophyllConc$sd_ChlorophyllConc))
+
+# Do an ANOVA
+
+model06 <- lm(ChlorophyllConc~Treatment, data = competition)
+
+autoplot(model06)
+
+anova(model06)
+
+# Not significant
