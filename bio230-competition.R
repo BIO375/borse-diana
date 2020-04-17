@@ -225,3 +225,50 @@ anova(model02)
 
 tukey <- glht(model02, linfct = mcp(Treatment = "Tukey"))
 summary(tukey)
+
+#### Flowers ####
+
+summary4 <- competition %>%
+  group_by(Treatment) %>%
+  summarise(mean_nFlowers = mean(nFlowers),
+            median_nFlowers = median(nFlowers),
+            IQR_nFlowers = IQR(nFlowers),
+            sd_nFlowers = sd(nFlowers),
+            var_nFlowers = var(nFlowers),
+            se_nFlowers = sd(nFlowers)/sqrt(n()),
+            n_nFlowers = n())
+
+# Testing for normality
+ggplot(competition) +
+  geom_boxplot(aes(group = Treatment, x = Treatment, y = nFlowers))+
+  stat_summary(aes(group = Treatment, x = Treatment, y = nFlowers), 
+               fun.y=mean, 
+               colour="blue", 
+               fill = "blue",
+               geom="point", 
+               shape=21, 
+               size=3)
+ggplot(competition) +
+  geom_histogram(aes(nFlowers), binwidth = 5)+
+  facet_wrap(~Treatment)
+ggplot(competition)+
+  geom_qq(aes(sample = nFlowers)) +
+  facet_wrap(~Treatment)
+
+# Check for homogeneous variance
+
+summ_nFlowers <- competition %>%
+  group_by(Treatment) %>% 
+  summarise(mean_nFlowers = mean(nFlowers),
+            sd_nFlowers = sd(nFlowers),
+            n_nFlowers = n())
+
+ratio <-(max(summ_nFlowers$sd_nFlowers))/(min(summ_nFlowers$sd_nFlowers))
+
+# Normality and variance are acceptable for an ANOVA
+
+model03 <- lm(nFlowers~Treatment, data = competition)
+
+autoplot(model03)
+
+anova(model03)
