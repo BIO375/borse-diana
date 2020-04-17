@@ -1,3 +1,5 @@
+#### Intraspecific Competition Data Analysis ####
+
 rm(list = ls())
 # Verify Working Directory
 getwd()
@@ -130,3 +132,96 @@ model01 <- lm(plantmass~Treatment, data = competition)
 autoplot(model01)
 
 anova(model01)
+
+# Perform unplanned test - Tukey HSD
+
+tukey <- glht(model01, linfct = mcp(Treatment = "Tukey"))
+summary(tukey)
+
+#### Internode Length ####
+
+# Calculate summary statistics
+
+summary3 <- competition %>%
+  group_by(Treatment) %>%
+  summarise(mean_intLength_mm = mean(intLength_mm),
+            median_intLength_mm = median(intLength_mm),
+            IQR_intLength_mm = IQR(intLength_mm),
+            sd_intLength_mm = sd(intLength_mm),
+            var_intLength_mm = var(intLength_mm),
+            se_intLength_mm = sd(intLength_mm)/sqrt(n()),
+            n_intLength_mm = n())
+
+# Testing for normality
+ggplot(competition) +
+  geom_boxplot(aes(group = Treatment, x = Treatment, y = intLength_mm))+
+  stat_summary(aes(group = Treatment, x = Treatment, y = intLength_mm), 
+               fun.y=mean, 
+               colour="blue", 
+               fill = "blue",
+               geom="point", 
+               shape=21, 
+               size=3)
+ggplot(competition) +
+  geom_histogram(aes(intLength_mm), binwidth = 2.5)+
+  facet_wrap(~Treatment)
+ggplot(competition)+
+  geom_qq(aes(sample = intLength_mm)) +
+  facet_wrap(~Treatment)
+
+# Check for homogeneous variance
+
+summ_intLength_mm <- competition %>%
+  group_by(Treatment) %>% 
+  summarise(mean_intLength_mm = mean(intLength_mm),
+            sd_intLength_mm = sd(intLength_mm),
+            n_intLength_mm = n())
+
+ratio <-(max(summ_intLength_mm$sd_intLength_mm))/(min(summ_intLength_mm$sd_intLength_mm))
+
+# Variance is not homogeneous.
+# Try a transformation 
+
+competition <- competition %>%
+  mutate(ln_intLength_mm = log(intLength_mm))
+
+# Check it
+summ_ln_intLength_mm <- competition %>%
+  group_by(Treatment) %>% 
+  summarise(mean_ln_intLength_mm = mean(ln_intLength_mm),
+            sd_ln_intLength_mm = sd(ln_intLength_mm),
+            n_ln_intLength_mm = n())
+
+ratio <-(max(summ_ln_intLength_mm$sd_ln_intLength_mm))/(min(summ_ln_intLength_mm$sd_ln_intLength_mm))
+
+# It fixed the variance... let's see what it looks like
+
+ggplot(competition) +
+  geom_boxplot(aes(group = Treatment, x = Treatment, y = ln_intLength_mm))+
+  stat_summary(aes(group = Treatment, x = Treatment, y = ln_intLength_mm), 
+               fun.y=mean, 
+               colour="blue", 
+               fill = "blue",
+               geom="point", 
+               shape=21, 
+               size=3)
+ggplot(competition) +
+  geom_histogram(aes(ln_intLength_mm), binwidth = .5)+
+  facet_wrap(~Treatment)
+ggplot(competition)+
+  geom_qq(aes(sample = ln_intLength_mm)) +
+  facet_wrap(~Treatment)
+
+# May have made it a bit less normal, but not unacceptable
+# Perform the ANOVA
+
+model02 <- lm(plantmass~Treatment, data = competition)
+
+autoplot(model02)
+
+anova(model02)
+
+# Perform unplanned test - Tukey HSD
+
+tukey <- glht(model02, linfct = mcp(Treatment = "Tukey"))
+summary(tukey)
