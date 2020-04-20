@@ -150,7 +150,7 @@ summ_ln_Aldrin <- Jaffe %>%
             n_ln_Aldrin = n())
 ratio <-(max(summ_ln_Aldrin$sd_ln_Aldrin))/(min(summ_ln_Aldrin$sd_ln_Aldrin))
 
-autoplot(model02)
+autoplot(model02) 
 
 anova(model02)
 
