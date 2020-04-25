@@ -52,7 +52,15 @@ ggplot(Cones) +
 ggplot(Cones)+
   geom_qq(aes(sample = conemass, color = habitat))
 
-# Yes, it is normal enough.
+# Check for Homogeneous variance
+summ_conemass <- Cones %>%
+  group_by(habitat) %>% 
+  summarise(mean_conemass = mean(conemass),
+            sd_conemass = sd(conemass),
+            n_conemass = n())
+ratio <-(max(summ_conemass$sd_conemass))/(min(summ_conemass$sd_conemass))
+
+# Yes, it is normal enough and has homogeneous variance (<3)
 # Set up for ANOVA
 model01 <- lm(conemass~habitat, data = Cones)
 
@@ -79,7 +87,7 @@ summary(tukey)
 Mosquitos <- read_csv("datasets/abd/chapter15/chap15q26MalariaFungusVenom.csv", col_types = cols(
   treatmentGroup = col_factor() ))
 Mosquitos <- Mosquitos %>%
-  mutate(treatmentGroup = fct_recode(treatmentGroup, Scorpine = "Scorpine",
+  mutate(crabType = fct_recode(treatmentGroup, Scorpine = "Scorpine",
                               WT = "WT",
                               Control = "Control" ))
 
@@ -99,7 +107,15 @@ ggplot(Mosquitos) +
 ggplot(Mosquitos)+
   geom_qq(aes(sample = logSporozoiteNumbers, color = treatmentGroup))
 
-# Yes, it is normal enough.
+# Check for Homogeneous variance
+summ_logSporozoiteNumbers <- Mosquitos %>%
+  group_by(treatmentGroup) %>% 
+  summarise(mean_logSporozoiteNumbers = mean(logSporozoiteNumbers),
+            sd_logSporozoiteNumbers = sd(logSporozoiteNumbers),
+            n_logSporozoiteNumbers = n())
+ratio <-(max(summ_logSporozoiteNumbers$sd_logSporozoiteNumbers))/(min(summ_logSporozoiteNumbers$sd_logSporozoiteNumbers))
+
+# Yes, it is normal enough and variance is homogeneous (<3).
 # Set up for ANOVA
 model02 <- lm(logSporozoiteNumbers~treatmentGroup, data = Mosquitos)
 
@@ -109,9 +125,59 @@ anova(model02)
 
 summary(model02)
 
-# Perform unplanned comparrison for the others
+# Perform unplanned comparison for the others
 tukey <- glht(model02, linfct = mcp(treatmentGroup = "Tukey"))
 summary(tukey)
 
 #### Problem 15-30 and/or 15-31 (same data in both problems) ####
 # Use the data to perform the correct test.  Please show code for all steps in your process.
+
+# Read in the Data
+Crabs <- read_csv("datasets/demos/Crabs.csv", col_types = cols(
+  crabType = col_factor() ))
+
+Crabs <- Crabs %>%
+  mutate(crabType = fct_recode(crabType, female = "female",
+                                     intact.male = "intact.male",
+                                     male.minor.removed = "male.minor.removed",
+                                    male.major.removed = "male.major.removed"))
+
+# Look at the data
+head(Crabs)
+summary(Crabs)
+
+# Check for normality
+
+ggplot(Crabs, aes(x = crabType, y = bodyTemperature))+
+  geom_boxplot() +
+  theme_bw() +
+  coord_flip()
+ggplot(Crabs) +
+  geom_histogram(aes(bodyTemperature), binwidth = .1)+
+  facet_wrap(~crabType)
+ggplot(Crabs)+
+  geom_qq(aes(sample = bodyTemperature, color = crabType)) +
+          facet_wrap(~crabType)
+
+# Test for homogeneous variance
+
+summ_bodyTemperature <- Crabs %>%
+  group_by(crabType) %>%
+  summarise(mean_bodyTemperature = mean(bodyTemperature),
+            sd_bodyTemperature = sd(bodyTemperature),
+            n_bodyTemperature = n())
+ratio <-(max(summ_bodyTemperature$sd_bodyTemperature))/(min(summ_bodyTemperature$sd_bodyTemperature))
+
+# Yes, it is normal enough and variance is homogeneous (<3).
+# Set up for ANOVA
+model03 <- lm(bodyTemperature~crabType, data = Crabs)
+
+autoplot(model03)
+
+anova(model03)
+
+summary(model03)
+
+# Perform unplanned Tukey test
+tukey <- glht(model03, linfct = mcp(crabType = "Tukey"))
+summary(tukey)
