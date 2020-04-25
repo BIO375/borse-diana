@@ -25,8 +25,93 @@ tidyverse_update()
 #### Problem 15-23 ####
 # Complete parts a and c only
 
+# a. This is a planned comparison.
+# c. 
+Cones <- read_csv("datasets/abd/chapter15/chap15q23LodgepolePineCones.csv", col_types = cols(
+  habitat = col_factor() ))
+
+#Calculate Summary statistics
+Cones <- Cones %>%
+  mutate(habitat = fct_recode(habitat, island.absent = "island.absent",
+                              island.present = "island.present",
+                               mainland.present = "mainland.present" ))
+
+# Look at the data
+head(Cones)
+summary(Cones)
+
+# Check for normality
+
+ggplot(Cones, aes(x = habitat, y = conemass))+
+  geom_boxplot() +
+  theme_bw() +
+  coord_flip()
+ggplot(Cones) +
+  geom_histogram(aes(conemass), binwidth = 1)+
+  facet_wrap(~habitat)
+ggplot(Cones)+
+  geom_qq(aes(sample = conemass, color = habitat))
+
+# Yes, it is normal enough.
+# Set up for ANOVA
+model01 <- lm(conemass~habitat, data = Cones)
+
+autoplot(model01)
+
+anova(model01)
+
+summary(model01)
+
+# Perform planned comparison
+planned <- glht(model01, linfct = 
+                  mcp(habitat = c("island.absent - island.present = 0")))
+confint(planned)
+summary(planned)
+
+# Perform unplanned comparrison for the others
+tukey <- glht(model01, linfct = mcp(habitat = "Tukey"))
+summary(tukey)
+
 #### Problem 15-26 ####
 # Use the data to perform the correct test.  Please show code for all steps in your process.
+
+# Read in the data
+Mosquitos <- read_csv("datasets/abd/chapter15/chap15q26MalariaFungusVenom.csv", col_types = cols(
+  treatmentGroup = col_factor() ))
+Mosquitos <- Mosquitos %>%
+  mutate(treatmentGroup = fct_recode(treatmentGroup, Scorpine = "Scorpine",
+                              WT = "WT",
+                              Control = "Control" ))
+
+# Look at the data
+head(Mosquitos)
+summary(Mosquitos)
+
+# Check for normality
+
+ggplot(Mosquitos, aes(x = treatmentGroup, y = logSporozoiteNumbers))+
+  geom_boxplot() +
+  theme_bw() +
+  coord_flip()
+ggplot(Mosquitos) +
+  geom_histogram(aes(logSporozoiteNumbers), binwidth = 1)+
+  facet_wrap(~treatmentGroup)
+ggplot(Mosquitos)+
+  geom_qq(aes(sample = logSporozoiteNumbers, color = treatmentGroup))
+
+# Yes, it is normal enough.
+# Set up for ANOVA
+model02 <- lm(logSporozoiteNumbers~treatmentGroup, data = Mosquitos)
+
+autoplot(model02)
+
+anova(model02)
+
+summary(model02)
+
+# Perform unplanned comparrison for the others
+tukey <- glht(model02, linfct = mcp(treatmentGroup = "Tukey"))
+summary(tukey)
 
 #### Problem 15-30 and/or 15-31 (same data in both problems) ####
 # Use the data to perform the correct test.  Please show code for all steps in your process.
