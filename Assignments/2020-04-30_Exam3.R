@@ -76,7 +76,8 @@ anova(Model01)
 # The ANOVA shows there is significant difference between at least two groups
 # p = 0.00006528 (p < 0.05)
 
-# Planned comparrisons
+#### Planned comparrisons ####
+
 # Between Men and women with normal progesterone levels
 planned01 <- glht(Model01, linfct = 
                   mcp(group = c("male - norm_prog = 0")))
@@ -100,3 +101,12 @@ summary(planned02)
 # Error 1.162
 # t -value 4.034
 # Pr(>|t|) 0.000384
+
+#### Summary of Results ####
+
+# There was a significant difference between caffeine metabolism in women with 
+# high progesterone and women with low progesterone (Planned Comparison: t= 4.034
+# p = 0.000384)
+
+# There was not a significant difference between men and women with normal levels 
+# of progesterone (Planned Comparison: t = -0.69, p = 0.522).
