@@ -110,3 +110,30 @@ summary(planned02)
 
 # There was not a significant difference between men and women with normal levels 
 # of progesterone (Planned Comparison: t = -0.69, p = 0.522).
+
+
+#### Plots for question 4 ####
+offspring <- read_csv("datasets/demos/offspring.csv")
+
+# Visits
+# Histogram
+ggplot(offspring) +
+  geom_histogram(aes(Visits), binwidth = 1)
+# Boxplot
+ggplot(offspring, aes(y = Visits)) +
+  geom_boxplot() +
+  theme_bw() 
+# Q-Q plot
+ggplot(offspring)+
+  geom_qq(aes(sample = Visits))
+
+# Babies
+ggplot(offspring) +
+  geom_histogram(aes(Babies), binwidth = 1)
+# Boxplot
+ggplot(offspring, aes(y = Babies)) +
+  geom_boxplot() +
+  theme_bw() 
+# Q-Q plot
+ggplot(offspring)+
+  geom_qq(aes(sample = Babies))
