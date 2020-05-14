@@ -25,7 +25,7 @@ ggplot(data = insulation)+
   geom_point(aes(x = leanness, y= resid(model01)))
 
 # The normal Q-Q plot is appropriately linear. The residuals versus predicted is 
-# not fan shaped and the residual by x plot may be somewhat fan shaped
+# somewhat fan shaped and the residual by x plot is also somewhat fan shaped
 
 # Try a transformation
 insulation <- insulation %>%
