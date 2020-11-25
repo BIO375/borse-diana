@@ -76,7 +76,38 @@ ggplot(data = infected_hornworms, aes(x = size, y = max_wasps)) +
   geom_point(color='black') +
   geom_smooth(method = "lm", color= "red", se = FALSE)
 
-#### Statistical tests ####
+# Statistical test for correlation between size and survival within i group
+
+# test for normality - size
+ggplot(infected_hornworms) +
+  geom_histogram(aes(size), binwidth = 100)
+
+
+ggplot(infected_hornworms) +
+  geom_boxplot(aes(x = "", y = size))
+
+ggplot(infected_hornworms) +
+  geom_qq(aes(sample = size))
+
+# test for normality - max_wasps
+ggplot(infected_hornworms) +
+  geom_histogram(aes(max_wasps), binwidth = 3)
+
+ggplot(infected_hornworms) +
+  geom_boxplot(aes(x = "", y = max_wasps))
+
+ggplot(infected_hornworms) +
+  geom_qq(aes(sample = max_wasps))
+
+# Correlation test
+
+infectedCor <- cor.test(~ size + max_wasps, data = infected_hornworms,
+                        method ="pearson")
+infectedCor
+
+# not a strong enough correlation, p>0.05
+
+#### Statistical test for size differences between groups ####
 
 # one sided t-test
 # HA: clean hornworms are larger than infected hornworms
