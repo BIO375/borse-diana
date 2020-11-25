@@ -46,7 +46,62 @@ ggplot(data = hornworms_tidy)+
 ggplot(data = hornworms_tidy)+
   geom_point(aes(x = ranked_size, y= max_wasps))
 
-# Larvae survivorship
+#### Statistical test for size differences between groups ####
+
+# one sided t-test
+# HA: clean hornworms are larger than infected hornworms
+# H0: clean hornworms are the same size as or smaller than infected hornworms
+
+# One-sided one-sample t-test
+
+summ_hornworms_tidy <- hornworms_tidy %>%
+  group_by(group) %>%
+  summarise(mean_size = mean(size),
+            median_size = median(size),
+            IQR_size = IQR(size),
+            sd_size = sd(size),
+            var_size = var(size),
+            se_size = sd(size)/sqrt(n()),
+            n_size = n()) 
+
+# test for violations of normality
+
+ggplot(hornworms_tidy) +
+  geom_histogram(aes(size), binwidth = 500)+
+facet_wrap(~group)
+
+ggplot(hornworms_tidy) +
+  geom_boxplot(aes(x = "", y = size))+
+  facet_wrap(~group)
+
+ggplot(hornworms_tidy) +
+  geom_qq(aes(sample = size))+
+  facet_wrap(~group)
+
+# Normal enough!!
+
+
+# Try a transformation anyway
+
+hornworms_tidy <- hornworms_tidy %>%
+  mutate(logsize = log(size))
+
+ggplot(hornworms_tidy) +
+  geom_histogram(aes(logsize), binwidth = .1)+
+  facet_wrap(~group)
+
+ggplot(hornworms_tidy) +
+  geom_boxplot(aes(x = "", y = logsize))
+
+ggplot(hornworms_tidy) +
+  geom_qq(aes(sample = logsize))
+
+# transformation made it much worse, so go back to using OG data
+#Proceed with one-sided, two-sample t-test
+
+t.test(size ~ group, data = hornworms_tidy, var.equal = TRUE, alternative = "greater", conf.level = 0.95)
+
+#### Larvae survivorship ####
 
 summ_hornworms_tidy <- hornworms_tidy %>%
   group_by(group) %>%
@@ -107,58 +162,4 @@ infectedCor
 
 # not a strong enough correlation, p>0.05
 
-#### Statistical test for size differences between groups ####
-
-# one sided t-test
-# HA: clean hornworms are larger than infected hornworms
-# H0: clean hornworms are the same size as or smaller than infected hornworms
-
-# One-sided one-sample t-test
-
-summ_hornworms_tidy <- hornworms_tidy %>%
-  group_by(group) %>%
-  summarise(mean_size = mean(size),
-            median_size = median(size),
-            IQR_size = IQR(size),
-            sd_size = sd(size),
-            var_size = var(size),
-            se_size = sd(size)/sqrt(n()),
-            n_size = n()) 
-
-# test for violations of normality
-
-ggplot(hornworms_tidy) +
-  geom_histogram(aes(size), binwidth = 500)+
-facet_wrap(~group)
-
-ggplot(hornworms_tidy) +
-  geom_boxplot(aes(x = "", y = size))+
-  facet_wrap(~group)
-
-ggplot(hornworms_tidy) +
-  geom_qq(aes(sample = size))+
-  facet_wrap(~group)
-
-# Normal enough!!
-
-
-# Try a transformation anyway
-
-hornworms_tidy <- hornworms_tidy %>%
-  mutate(logsize = log(size))
-
-ggplot(hornworms_tidy) +
-  geom_histogram(aes(logsize), binwidth = .1)+
-  facet_wrap(~group)
-
-ggplot(hornworms_tidy) +
-  geom_boxplot(aes(x = "", y = logsize))
-
-ggplot(hornworms_tidy) +
-  geom_qq(aes(sample = logsize))
-
-# transformation made it much worse, so go back to using OG data
-#Proceed with one-sided, two-sample t-test
-
-t.test(size ~ group, data = hornworms_tidy, var.equal = TRUE, alternative = "greater", conf.level = 0.95)
 
