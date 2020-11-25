@@ -17,7 +17,6 @@ tidyverse_update()
 
 library(readr)
 hornworms_tidy <- read_csv("Assignments/hornworms_tidy.csv")
-View(hornworms_tidy)
 
 data <- hornworms_tidy
 summary <- hornworms_tidy %>%
@@ -45,6 +44,7 @@ ggplot(data = hornworms_tidy)+
 
 ggplot(data = hornworms_tidy)+
   geom_point(aes(x = ranked_size, y= max_wasps))
+
 
 #### Statistical test for size differences between groups ####
 
@@ -120,13 +120,13 @@ ggplot(data = hornworms_tidy)+
 
 library(readr)
 infected_hornworms <- read_csv("Assignments/infected_hornworms.csv")
-View(infected_hornworms)
 
-# Simple point plot of survival of wasps
-ggplot(data = infected_hornworms)+
-  geom_point(aes(x = max_larvae, y= max_wasps))
+# Graph of max_larvae vs max_wasps
+ggplot(data = infected_hornworms, aes(x = max_larvae, y = max_wasps)) + 
+  geom_point(color='black') +
+  geom_smooth(method = "lm", color= "red", se = FALSE)
 
-# plot with line of best fit
+# plot of max_wasps and size with line of best fit
 ggplot(data = infected_hornworms, aes(x = size, y = max_wasps)) + 
   geom_point(color='black') +
   geom_smooth(method = "lm", color= "red", se = FALSE)
@@ -136,7 +136,6 @@ ggplot(data = infected_hornworms, aes(x = size, y = max_wasps)) +
 # test for normality - size
 ggplot(infected_hornworms) +
   geom_histogram(aes(size), binwidth = 100)
-
 
 ggplot(infected_hornworms) +
   geom_boxplot(aes(x = "", y = size))
