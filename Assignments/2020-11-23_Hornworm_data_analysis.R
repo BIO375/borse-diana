@@ -126,6 +126,11 @@ ggplot(data = infected_hornworms, aes(x = max_larvae, y = max_wasps)) +
   geom_point(color='black') +
   geom_smooth(method = "lm", color= "red", se = FALSE)
 
+# plot of max_larvae and size with line of best fit
+ggplot(data = infected_hornworms, aes(x = size, y = max_larvae)) + 
+  geom_point(color='black') +
+  geom_smooth(method = "lm", color= "red", se = FALSE)
+
 # plot of max_wasps and size with line of best fit
 ggplot(data = infected_hornworms, aes(x = size, y = max_wasps)) + 
   geom_point(color='black') +
@@ -161,4 +166,23 @@ infectedCor
 
 # not a strong enough correlation, p>0.05
 
+#### Linear Regression ####
 
+# larvae vs size
+model01 <- lm(max_larvae ~ size, data = hornworms_tidy)
+autoplot(model01, smooth.colour = NA)
+
+ggplot(data = hornworms_tidy)+
+  geom_point(aes(x = size, y= resid(model01)))
+
+summary(model01)
+
+# wasps vs size
+
+model02 <- lm(max_wasps ~ size, data = hornworms_tidy)
+autoplot(model02, smooth.colour = NA)
+
+ggplot(data = hornworms_tidy)+
+  geom_point(aes(x = size, y= resid(model02)))
+
+summary(model02)
