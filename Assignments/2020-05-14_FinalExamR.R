@@ -8,7 +8,7 @@ getwd()
 library("ggfortify")
 library("broom")
 # Load tidyverse
-library("tidyverse")
+library("tidyverse") 
 
 # Check for updates
 tidyverse_update()

@@ -74,3 +74,32 @@ ggplot(TPatches_elevation)+
 
 # did not help at all.
 
+#### Phrag Patches elevation ####
+
+library(readr)
+PPatches_elevation <- read_csv("~/Hoscho Thesis/Data Tables/Fall_2020_PhragPatches+elevation.dbf.csv")
+
+# Calculate summary statistics
+Summ_PPatches_elevation <- PPatches_elevation %>%
+  summarise(mean_MEAN = mean(MEAN),
+            median_MEAN = median(MEAN),
+            IQR_MEAN = IQR(MEAN),
+            sd_MEAN = sd(MEAN),
+            var_MEAN = var(MEAN),
+            se_MEAN = sd(MEAN)/sqrt(n()),
+            n_MEAN = n()) 
+
+view(Summ_PPatches_elevation)
+
+# Check for normality
+
+ggplot(PPatches_elevation, aes(x = MEAN))+
+  geom_boxplot() +
+  theme_bw() +
+  coord_flip()
+ggplot(PPatches_elevation) +
+  geom_histogram(aes(MEAN), binwidth = .1)
+ggplot(PPatches_elevation)+
+  geom_qq(aes(sample = MEAN))
+
+# Not super normal.
