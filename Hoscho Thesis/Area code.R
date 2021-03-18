@@ -55,3 +55,19 @@ ggplot(data = PPatch_Area_All_years)+
   geom_point(aes(x = Year, y= resid(model01)))
 
 summary(model01)
+
+#### Patch expansion example ####
+
+library(readr)
+Growth_example_patch <- read_csv("~/Hoscho Thesis/Data Tables/Growth_example_patch.csv")
+View(Growth_example_patch)
+
+# Linear Regression #
+
+model02 <- lm(Area ~ Year, data = Growth_example_patch)
+autoplot(model02, smooth.colour = NA)
+
+ggplot(data = PPatch_Area_All_years)+
+  geom_point(aes(x = Year, y= resid(model02)))
+
+summary(model02)
