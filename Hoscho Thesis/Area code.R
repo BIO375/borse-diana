@@ -43,6 +43,15 @@ Summ_PPatch_Area_All_years <- PPatch_Area_All_years %>%
             se_Area = sd(Area)/sqrt(n()),
             n_Area = n()) 
 
-#Performing the t-test?
+#Performing the Linear Regression
 
-t.test(PPatch_Area_All_years$Area, alternative = "greater", mu = 0, conf.level = 0.95)
+#### Linear Regression ####
+
+# Area vs year
+model01 <- lm(Area ~ Year, data = PPatch_Area_All_years)
+autoplot(model01, smooth.colour = NA)
+
+ggplot(data = PPatch_Area_All_years)+
+  geom_point(aes(x = Year, y= resid(model01)))
+
+summary(model01)
